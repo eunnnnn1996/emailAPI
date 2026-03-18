@@ -1,0 +1,17 @@
+# local secrets
+src/main/resources/application-local.yml
+src/main/resources/application.yml
+.env
+.env.*
+
+# gradle
+.gradle/
+build/
+
+# logs
+logs/
+*.log
+
+# ide
+.idea/
+.vscode/
