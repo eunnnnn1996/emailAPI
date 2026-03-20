@@ -1,17 +1,19 @@
 package com.example.emailapi.domain.template.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.emailapi.domain.template.dto.CreateTemplateRequest;
 import com.example.emailapi.domain.template.dto.TemplateResponse;
 import com.example.emailapi.domain.template.dto.UpdateTemplateRequest;
 import com.example.emailapi.domain.template.entity.EmailTemplate;
 import com.example.emailapi.domain.template.repository.EmailTemplateRepository;
 import com.example.emailapi.global.exception.ApiException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -37,11 +39,9 @@ public class EmailTemplateService {
         return TemplateResponse.from(emailTemplateRepository.save(template));
     }
 
-    public List<TemplateResponse> findAll() {
-        return emailTemplateRepository.findAll()
-                .stream()
-                .map(TemplateResponse::from)
-                .toList();
+    public Page<TemplateResponse> findAll(Pageable pageable) {
+        return emailTemplateRepository.findAll(pageable)
+                .map(TemplateResponse::from);
     }
 
     public TemplateResponse findOne(Long id) {
