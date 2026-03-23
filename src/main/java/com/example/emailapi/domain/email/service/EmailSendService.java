@@ -49,7 +49,7 @@ public class EmailSendService {
                 .map(EmailHistoryResponse::from);
     }
 
-    private EmailHistoryResponse send(String toEmail, String subject, String body, EmailTemplate template, String requestType, LocalDateTime scheduledAt) {
+    private EmailHistoryResponse send(String toEmail, String subject, String body, EmailTemplate template, String requestType) {
         EmailHistory history = EmailHistory.builder()
                 .template(template)
                 .requestType(requestType)
