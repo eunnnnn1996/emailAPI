@@ -1,23 +1,26 @@
 package com.example.emailapi.domain.email.service;
 
-import com.example.emailapi.domain.email.dto.EmailHistoryResponse;
-import com.example.emailapi.domain.email.dto.SendDirectEmailRequest;
-import com.example.emailapi.domain.email.dto.SendTemplateEmailRequest;
-import com.example.emailapi.domain.history.entity.EmailHistory;
-import com.example.emailapi.domain.history.repository.EmailHistoryRepository;
-import com.example.emailapi.domain.template.entity.EmailTemplate;
-import com.example.emailapi.domain.template.service.EmailTemplateService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
+import java.time.LocalDateTime;
+import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import com.example.emailapi.domain.email.dto.EmailHistoryResponse;
+import com.example.emailapi.domain.email.dto.EmailSchedule;
+import com.example.emailapi.domain.email.dto.SendDirectEmailRequest;
+import com.example.emailapi.domain.email.dto.SendTemplateEmailRequest;
+import com.example.emailapi.domain.history.entity.EmailHistory;
+import com.example.emailapi.domain.history.repository.EmailHistoryRepository;
+import com.example.emailapi.domain.template.entity.EmailTemplate;
+import com.example.emailapi.domain.template.service.EmailTemplateService;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +33,7 @@ public class EmailSendService {
 
     @Transactional
     public EmailHistoryResponse sendDirect(SendDirectEmailRequest request) {
-        return send(request.getToEmail(), request.getSubject(), request.getBody(), null, "DIRECT");
+        return send(request.getToEmail(), request.getSubject(), request.getBody(), null, "DIRECT", request.getScheduledAt());
     }
 
     @Transactional
@@ -41,14 +44,12 @@ public class EmailSendService {
         return send(request.getToEmail(), subject, body, template, "TEMPLATE");
     }
 
-    public List<EmailHistoryResponse> findAllHistory() {
-        return emailHistoryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))
-                .stream()
-                .map(EmailHistoryResponse::from)
-                .toList();
+    public Page<EmailHistoryResponse> findAllHistory(Pageable pageable) {
+        return emailHistoryRepository.findAll(pageable)
+                .map(EmailHistoryResponse::from);
     }
 
-    private EmailHistoryResponse send(String toEmail, String subject, String body, EmailTemplate template, String requestType) {
+    private EmailHistoryResponse send(String toEmail, String subject, String body, EmailTemplate template, String requestType, LocalDateTime scheduledAt) {
         EmailHistory history = EmailHistory.builder()
                 .template(template)
                 .requestType(requestType)

@@ -1,6 +1,9 @@
 package com.example.emailapi.domain.email.dto;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,4 +21,7 @@ public class SendDirectEmailRequest {
 
     @NotBlank
     private String body;
+
+    @Future
+    private LocalDateTime scheduledAt;
 }
